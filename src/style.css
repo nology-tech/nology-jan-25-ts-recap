@@ -61,6 +61,10 @@ h1 {
     height: 250px;
 }
 
+.quote {
+    max-width: 300px;
+}
+
 .logo {
     height: 6em;
     padding: 1.5em;

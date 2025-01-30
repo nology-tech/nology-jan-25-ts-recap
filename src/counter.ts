@@ -1,3 +1,5 @@
+import { CharInfo } from './Character';
+
 export function setupCounter(element: HTMLButtonElement) {
     let counter = 0;
     const setCounter = (count: number) => {
@@ -13,29 +15,16 @@ export function setupCounter(element: HTMLButtonElement) {
         await createCharCard(counter);
     });
 
-    setCounter(825);
+    setCounter(0);
 }
 
-// const defaultChar: CharInfo = {
-//     id: 0,
-//     image: 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg',
-//     name: 'Unknown',
-//     origin: {
-//         name: 'Location not Found',
-//         url: '',
-//     },
-// };
-
-export const getCharData = async (
-    charId: number,
-): Promise<CharInfo | null | undefined> => {
+export const getCharData = async (charId: number): Promise<CharInfo> => {
     try {
         const response = await fetch(
             `https://rickandmortyapi.com/api/character/${charId}`,
         );
 
         if (response.ok) {
-            console.log('When OK => body:', response.body);
             const data = await response.json();
             const { id, name, image, origin } = data;
             return { id, name, image, origin };
@@ -52,8 +41,15 @@ export const getCharData = async (
         }
     } catch (error) {
         console.log('On Fetch this error happened:', error);
-        return null;
-        // return defaultChar;
+        return {
+            id: 0,
+            image: 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg',
+            name: 'Unknown',
+            origin: {
+                name: 'Location not Found',
+                url: '',
+            },
+        };
     }
 };
 
@@ -76,8 +72,6 @@ const getQuote = async () => {
 export const createCharCard = async (charId: number): Promise<void> => {
     const char = await getCharData(charId);
     const quote = await getQuote();
-    console.log('Char', char);
-    console.log('Quote', quote[0].quote);
 
     if (char) {
         document.querySelector<HTMLDivElement>(
@@ -86,18 +80,8 @@ export const createCharCard = async (charId: number): Promise<void> => {
         <img src="${char.image}" class="logo" alt="charImage" />
         <h1>${char.name}</h1>
         <p>Origin: ${char.origin.name}</p>
-        <p>Quote: ${quote[0].quote}</p>
+        <p class='quote'>Quote: ${quote[0].quote}</p>
 
     </div>`;
     }
-};
-
-type CharInfo = {
-    id: number;
-    image: string;
-    name: string;
-    origin: {
-        name: string;
-        url: string;
-    };
 };
