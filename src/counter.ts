@@ -1,0 +1,103 @@
+export function setupCounter(element: HTMLButtonElement) {
+    let counter = 0;
+    const setCounter = (count: number) => {
+        counter = count;
+        element.innerHTML = `count is ${counter}`;
+    };
+    element.addEventListener('click', () => {
+        setCounter(counter + 1);
+        console.log('Clicked on button');
+    });
+    element.addEventListener('click', async () => {
+        console.log('API CHAR');
+        await createCharCard(counter);
+    });
+
+    setCounter(825);
+}
+
+const defaultChar: CharInfo = {
+    id: 0,
+    image: 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg',
+    name: 'Unknown',
+    origin: {
+        name: 'Location not Found',
+        url: '',
+    },
+};
+
+export const getCharData = async (
+    charId: number,
+): Promise<CharInfo | null | undefined> => {
+    try {
+        const response = await fetch(
+            `https://rickandmortyapi.com/api/character/${charId}`,
+        );
+
+        if (response.ok) {
+            console.log('When OK => body:', response.body);
+            const data = await response.json();
+            const { id, name, image, origin, ...rest } = data;
+            return { id, name, image, origin };
+        } else {
+            if (response.status === 404) {
+                throw new Error(
+                    `Character with ID: ${charId} was not found on the API`,
+                );
+            }
+            if (response.status === 500) {
+                throw new Error(`The API server is currenty not working`);
+            }
+            throw new Error(`${response.status}`);
+        }
+    } catch (error) {
+        console.log('On Fetch this error happened:', error);
+        return null;
+        // return defaultChar;
+    }
+};
+
+const getQuote = async () => {
+    try {
+        const response = await fetch('https://api.api-ninjas.com/v1/quotes', {
+            headers: {
+                'X-Api-Key': 'ZinaxutyAH6jOQTdPNwkBg==Bpu0gN2LQ3EvN7h1',
+            },
+        });
+        if (response.ok) {
+            return response.json();
+        }
+        return 'Something wrong error';
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const createCharCard = async (charId: number): Promise<void> => {
+    const char = await getCharData(charId);
+    const quote = await getQuote();
+    console.log('Char', char);
+    console.log('Quote', quote[0].quote);
+
+    if (char) {
+        document.querySelector<HTMLDivElement>(
+            '#chars',
+        )!.innerHTML += `<div class="char">
+        <img src="${char.image}" class="logo" alt="charImage" />
+        <h1>${char.name}</h1>
+        <p>Origin: ${char.origin.name}</p>
+        <p>Quote: ${quote[0].quote}</p>
+
+    </div>`;
+    }
+};
+
+type CharInfo = {
+    id: number;
+    image: string;
+    name: string;
+    origin: {
+        name: string;
+        url: string;
+    };
+};
