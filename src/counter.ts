@@ -16,15 +16,15 @@ export function setupCounter(element: HTMLButtonElement) {
     setCounter(825);
 }
 
-const defaultChar: CharInfo = {
-    id: 0,
-    image: 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg',
-    name: 'Unknown',
-    origin: {
-        name: 'Location not Found',
-        url: '',
-    },
-};
+// const defaultChar: CharInfo = {
+//     id: 0,
+//     image: 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg',
+//     name: 'Unknown',
+//     origin: {
+//         name: 'Location not Found',
+//         url: '',
+//     },
+// };
 
 export const getCharData = async (
     charId: number,
@@ -37,7 +37,7 @@ export const getCharData = async (
         if (response.ok) {
             console.log('When OK => body:', response.body);
             const data = await response.json();
-            const { id, name, image, origin, ...rest } = data;
+            const { id, name, image, origin } = data;
             return { id, name, image, origin };
         } else {
             if (response.status === 404) {
